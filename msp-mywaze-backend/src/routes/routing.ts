@@ -37,7 +37,7 @@ router.post('/route', async (req: Request, res: Response): Promise<any> => {
 
   try {
     const response = await axios.post(
-      'https://api.openrouteservice.org/v2/directions/foot-walking/geojson',
+      'https://api.openrouteservice.org/v2/directions/driving-car/geojson',
       {
         coordinates: [start, end],
       },

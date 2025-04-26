@@ -15,6 +15,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
   const [route, setRoute] = useState<[number, number][]>([]);
   const [destinationCoords, setDestinationCoords] = useState<[number, number] | null>(null);
   const [destinationNameDisplay, setDestinationNameDisplay] = useState<string | null>(null);
+  const [eta, setEta] = useState<string | null>(null);
 
   const destinationMarkerRef = useRef<LeafletMarker | null>(null);
 
@@ -55,15 +56,20 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
         );
         setRoute(coords);
 
+        // Calculate ETA
+        const durationSeconds = routeData.features[0].properties.summary.duration;
+        const arrivalTime = new Date(Date.now() + durationSeconds * 1000);
+        const hours = arrivalTime.getHours().toString().padStart(2, '0');
+        const minutes = arrivalTime.getMinutes().toString().padStart(2, '0');
+        setEta(`${hours}:${minutes}`);
+
       } catch (error) {
         console.error('Error getting route:', error);
       }
     };
 
     fetchRoute();
-  //}, [destination, currentLocation]); // This is the better way but I had to remove it to keep api consumption low
   }, [destination]);
-
 
   return (
     <MapContainer
@@ -102,7 +108,16 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
             }
           }}
         >
-          <Popup>{destinationNameDisplay}</Popup>
+          <Popup>
+            <div style={{ textAlign: 'center' }}>
+              <div>{destinationNameDisplay}</div>
+              {eta && (
+                <div style={{ color: '#3388ff', fontWeight: 'bold', marginTop: '4px' }}>
+                  ETA: {eta}
+                </div>
+              )}
+            </div>
+          </Popup>
         </Marker>
       )}
     </MapContainer>
