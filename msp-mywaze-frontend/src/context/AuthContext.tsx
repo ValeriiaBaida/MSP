@@ -1,23 +1,25 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-interface Credentials {
+interface User {
   email: string;
   password: string;
+  preferences: Record<string, string>;
 }
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  credentials: Credentials | null;
+  credentials: User | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  updatePreference: (setting: string, value: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [credentials, setCredentials] = useState<Credentials | null>(null);
+  const [credentials, setCredentials] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
     try {
@@ -34,7 +36,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('Invalid login credentials');
       }
 
-      setCredentials({ email, password });
+      const data = await response.json();
+
+      setCredentials({
+        email,
+        password,
+        preferences: data.user.preferences || {},
+      });
       setIsLoggedIn(true);
     } catch (error) {
       console.error('Login failed:', error);
@@ -56,13 +64,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('Registration failed');
       }
 
-      // After registration, immediately log in
-      setCredentials({ email, password });
+      const data = await response.json();
+
+      setCredentials({
+        email,
+        password,
+        preferences: data.user.preferences || {},
+      });
       setIsLoggedIn(true);
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
     }
+  };
+
+  const updatePreference = (setting: string, value: string) => {
+    setCredentials((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        preferences: {
+          ...prev.preferences,
+          [setting]: value,
+        },
+      };
+    });
   };
 
   const logout = () => {
@@ -71,8 +97,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, credentials, login, register, logout }}>
-      {children}
+    <AuthContext.Provider value={{ isLoggedIn, credentials, login, register, logout, updatePreference }}>
+          {children}
     </AuthContext.Provider>
   );
 };

@@ -19,4 +19,13 @@ db.exec(`
   );
 `);
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS user_preferences (
+      email TEXT NOT NULL,
+      setting TEXT NOT NULL,
+      value TEXT NOT NULL,
+      PRIMARY KEY (email, setting)
+    );
+  `);
+
 export default db;

@@ -1,7 +1,24 @@
 import { Router, Request, Response } from 'express';
-import db from '../database/db'; // 👈 import the database connection
+import db from '../database/db';
 
 const router = Router();
+
+interface UserPreferenceRow {
+    setting: string;
+    value: string;
+}
+
+const getUserPreferences = (email: string): Record<string, string> => {
+    const stmt = db.prepare('SELECT setting, value FROM user_preferences WHERE email = ?');
+    const rows = stmt.all(email) as UserPreferenceRow[];
+
+    const preferences: Record<string, string> = {};
+    for (const row of rows) {
+        preferences[row.setting] = row.value;
+    }
+
+    return preferences;
+};
 
 // Login Endpoint
 router.post('/login', async (req: Request, res: Response): Promise<any> => {
@@ -16,7 +33,14 @@ router.post('/login', async (req: Request, res: Response): Promise<any> => {
     const user = stmt.get(email, password);
 
     if (user) {
-      return res.status(200).json({ user: { email: email } });
+      const preferences = getUserPreferences(email);
+
+      return res.status(200).json({
+        user: {
+          email,
+          preferences,
+        },
+      });
     } else {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -38,7 +62,18 @@ router.post('/register', async (req: Request, res: Response): Promise<any> => {
     const stmt = db.prepare('INSERT INTO users (email, password) VALUES (?, ?)');
     stmt.run(email, password);
 
-    return res.status(201).json({ user: { email } });
+    // Default user preferences
+    const stmt2 = db.prepare('INSERT INTO user_preferences (email, setting, value) VALUES (?, \'vehicle_type\', \'car\')');
+    stmt2.run(email);
+
+    const preferences = getUserPreferences(email);
+
+    return res.status(201).json({
+      user: {
+        email,
+        preferences,
+      },
+    });
   } catch (error: any) {
     if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
       return res.status(409).json({ error: 'Email already registered' });

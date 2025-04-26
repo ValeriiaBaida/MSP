@@ -1,9 +1,8 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import './LogoutButton.css';
 
-const LogoutButton: React.FC = () => {
+const LogoutItem: React.FC = () => {
   const { logout, credentials } = useAuth();
   const navigate = useNavigate();
 
@@ -15,17 +14,17 @@ const LogoutButton: React.FC = () => {
   };
 
   return (
-    <div className="logout-container">
-      {credentials?.email && (
-        <div className="logout-greeting">
-          Hi, {credentials.email}
-        </div>
-      )}
-      <button onClick={handleLogout} className="logout-button">
-        Logout
-      </button>
-    </div>
+    <>
+        <span className="logout-greeting">
+            Welcome back,<br />{credentials!.email}
+        </span>
+        &nbsp;(
+        <a onClick={handleLogout} href="#" className="logout-button">
+          Logout
+        </a>
+        )
+    </>      
   );
 };
 
-export default LogoutButton;
+export default LogoutItem;
