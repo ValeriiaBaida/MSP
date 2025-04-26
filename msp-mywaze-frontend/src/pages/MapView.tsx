@@ -29,7 +29,9 @@ const MapView: React.FC = () => {
         setCurrentLocation(coords);
       },
       (err) => {
-        console.error('Error watching location:', err);
+        if (err.code !== 2) { // 2 is POSITION_UNAVAILABLE which is intended behavior -> changed to reduce console noise
+          console.error('Error watching location:', err);
+        }
       },
       {
         enableHighAccuracy: true,
