@@ -1,0 +1,6 @@
+.user-location {
+    stroke: #ffffff; /* Border color */
+    stroke-width: 3;
+    fill: #3388ff;   /* Fill color */
+    fill-opacity: 1;
+  }
