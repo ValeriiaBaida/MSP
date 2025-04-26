@@ -34,7 +34,7 @@ const MapView: React.FC = () => {
         if (pos.coords.speed !== null) {
           setSpeed(pos.coords.speed);
         } else {
-          setSpeed(13); // To test on desktop, set speed to just over 50
+          setSpeed(13); // To test on desktop, set speed to just over 50 (m/s)
         }
       },
       (err) => {
