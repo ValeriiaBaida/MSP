@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 import SearchBar from '../components/Input/SearchBar';
 import RouteMap from '../components/Map/RouteMap';
+import LogoutButton from '../components/MenuItems/LogoutButton';
 
 const MapView: React.FC = () => {
   const [currentLocation, setCurrentLocation] = useState<[number, number] | null>(null);
@@ -49,6 +50,9 @@ const MapView: React.FC = () => {
         setDestination={setDestination}
         destination={destination}
       />
+      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}>
+        <LogoutButton />
+      </div>
       <RouteMap
         currentLocation={currentLocation}
         destination={submittedDestination}
