@@ -2,6 +2,11 @@
 \usepackage{geometry}
 \usepackage{longtable}
 \usepackage{array}
+
+\AtBeginDocument{%
+  \immediate\write18{./bpmn_to_image.sh}%
+}
+
 \geometry{margin=1in}
 
 \title{MSP Report - Sprint 1}
