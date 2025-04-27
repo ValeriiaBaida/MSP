@@ -4,6 +4,14 @@
 \usepackage{array}
 
 \usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  breaklines=true
+}
 
 \newcommand{\modelentry}[1]{%
   \begin{figure}[h]
@@ -100,5 +108,41 @@ Register vehicle type & MyWaze.bpmn, MyWaze\_registerVehicleType.bpmn \\
 
 \section*{Models}
 \input{models_list.tex}
+
+\clearpage
+\section*{Prototype}
+\subsection{Running Instructions}
+
+\begin{lstlisting}[language=bash]
+cd msp-mywaze-backend
+npm i
+npm run dev
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+cd msp-mywaze-frontend
+npm i
+npm run dev
+\end{lstlisting}
+
+The only prerequisites are a current version of \texttt{node} and \texttt{npm}. The database is implemented as SQLite, so no manual setup is necessary.
+
+Routing uses OpenRouteService, which is quota-limited (daily) in the free version. If it stops working, please wait one day or change the variable \texttt{ORS\_API\_KEY} in \texttt{msp-mywaze-backend/src/routes/routing.ts} to your own (free) API key obtained from \url{https://openrouteservice.org}.
+
+\section*{Features Implemented}
+
+\begin{itemize}
+    \item \textbf{Registration}: User can register and login on home page.\\[0.5em]
+    \includegraphics[width=\textwidth]{images/Registration.png}
+
+    \item \textbf{Vehicle Type Registration}: User can configure their vehicle type in the drop-down user menu on the top right of the screen.
+
+    \item \textbf{Define Route}: User can define a route by entering the destination name or address into the text field at the top center and clicking \textit{Go}.
+
+    \item \textbf{ETA}: ETA is displayed in a popup above the destination after a route is defined.
+
+    \item \textbf{Speed Warning}: Current speed will turn red if the user moves over 50 km/h. To test speed warnings on desktop, click on the speed value to generate a random speed around 50 km/h.\\[0.5em]
+    \includegraphics[width=\textwidth]{images/Route_VehicleType_ETA_Speed.png}
+\end{itemize}
 
 \end{document}
