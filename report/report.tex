@@ -3,6 +3,17 @@
 \usepackage{longtable}
 \usepackage{array}
 
+\usepackage{graphicx}
+
+\newcommand{\modelentry}[1]{%
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{images/exported_bpmn/#1.pdf}
+    \caption{Model: \detokenize{#1}}
+    \label{fig:#1}
+  \end{figure}
+}
+
 \AtBeginDocument{%
   \immediate\write18{./bpmn_to_image.sh}%
 }
@@ -86,5 +97,8 @@ Change units & MyWaze.bpmn, MyWaze\_changeUnits.bpmn \\
 Register vehicle type & MyWaze.bpmn, MyWaze\_registerVehicleType.bpmn \\
 \hline
 \end{longtable}
+
+\section*{Models}
+\input{models_list.tex}
 
 \end{document}
