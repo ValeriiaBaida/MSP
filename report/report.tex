@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{hyperref}
+\usepackage{float}
 
 \lstset{
   basicstyle=\ttfamily,
@@ -76,7 +77,7 @@
 
 \subsection*{Task Table}
 
-\begin{table}[h!]
+\begin{table}[H]
   \centering
   \begin{tabular}{|c|p{6cm}|c|c|}
   \hline
@@ -99,7 +100,7 @@
 
 \subsection*{Gantt Chart}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{images/gantt_chart.png}
   \caption{Gantt Chart}
@@ -108,14 +109,12 @@
 
 \subsection*{Burndown Chart}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{images/burndown.png}
   \caption{Burndown Chart}
   \label{fig:burndown_chart}
 \end{figure}
-
-\clearpage
 
   
 
@@ -162,7 +161,7 @@ Register vehicle type & MyWaze.bpmn, MyWaze\_registerVehicleType.bpmn \\
 
 \clearpage
 \section*{Requirements Diagram}
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/SysML_Req.png}
     \caption{Requirements Diagram}
