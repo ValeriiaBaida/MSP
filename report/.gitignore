@@ -29,7 +29,7 @@
 *.nlo
 *.nls
 *.out
-*.pdf
+#*.pdf #pdf should be in the repo for submission
 *.pyg
 *.run.xml
 *.snm
@@ -45,3 +45,4 @@
 .bak 
 .mtc
 build/
+images/exported_bpmn
