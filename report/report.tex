@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{longtable}
+\usepackage{array}
+\geometry{margin=1in}
+
+\title{MSP Report - Sprint 1}
+\author{Franka Traupe, Roschanak Babai, Nikals Sander, Valeriia Baida, Guilherme Fernandes}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Features}
+(Proposal for sprint 2 highlighted in bold)
+
+\subsection*{Basic Features (Implemented in prototype)}
+\begin{itemize}
+    \item Register account
+    \item Register type of vehicle
+    \item Define route
+    \item Alert if speed limit is violated
+    \item Calculate estimated time of arrival
+\end{itemize}
+
+\subsection*{Features from Existing System}
+\begin{itemize}
+    \item \textbf{Bookmarking (home, work)}
+    \item Avoid tolls
+    \item \textbf{Recent destinations}
+    \item Show current speed (implemented already as part of speed alerts)
+    \item Parking lots
+    \item \textbf{Hazard reports}
+    \item \textbf{Change units}
+\end{itemize}
+
+\subsection*{New Features}
+\begin{itemize}
+    \item \textbf{Statistics: usage and driving quality (rate of speed violations etc.)}
+    \item Walking route
+    \item Shared ride
+\end{itemize}
+
+\section*{Match from Features to Models}
+
+\begin{longtable}{|>{\raggedright}p{0.4\textwidth}|>{\raggedright\arraybackslash}p{0.5\textwidth}|}
+\hline
+\textbf{Feature} & \textbf{Model} \\
+\hline
+Overall process & MyWaze.bpmn \\
+\hline
+Register account & MyWaze\_registerAccount.bpmn \\
+\hline
+Recent destinations & MyWaze\_defineDestination.bpmn \\
+\hline
+Define route & MyWaze\_defineRoute.bpmn, MyWaze\_calculateRoute.bpmn \\
+\hline
+Avoid tolls & MyWaze\_defineRoute.bpmn \\
+\hline
+Walking route & MyWaze\_defineRoute.bpmn \\
+\hline
+ETA & MyWaze\_defineRoute.bpmn \\
+\hline
+Current speed & MyWaze\_navigate.bpmn, MyWaze\_speedMonitoring.bpmn \\
+\hline
+Speed alert & MyWaze\_navigate.bpmn, MyWaze\_speedMonitoring.bpmn \\
+\hline
+Find parking lots & MyWaze\_navigate.bpmn, MyWaze\_defineRouteToParkingLot.bpmn, MyWaze\_calculateRoute.bpmn \\
+\hline
+Hazard reports & MyWaze\_navigate.bpmn, MyWaze\_reportHazard.bpmn \\
+\hline
+Share ride & MyWaze.bpmn, MyWaze\_registerRideOffering.bpmn, MyWaze\_arrangeSharedRide.bpmn \\
+\hline
+Bookmarking & MyWaze.bpmn, MyWaze\_createBookmark.bpmn \\
+\hline
+Statistics & MyWaze.bpmn, MyWaze\_provideStatistics.bpmn \\
+\hline
+Change units & MyWaze.bpmn, MyWaze\_changeUnits.bpmn \\
+\hline
+Register vehicle type & MyWaze.bpmn, MyWaze\_registerVehicleType.bpmn \\
+\hline
+\end{longtable}
+
+\end{document}
