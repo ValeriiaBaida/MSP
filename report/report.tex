@@ -15,7 +15,7 @@
 }
 
 \newcommand{\modelentry}[1]{%
-  \begin{figure}[h]
+  \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/exported_bpmn/#1.pdf}
     \caption{Model: \detokenize{#1}}
@@ -27,7 +27,12 @@
   \immediate\write18{./bpmn_to_image.sh}%
 }
 
-\geometry{margin=1in}
+\geometry{
+  left=1in,
+  right=1in,
+  top=0.5in,
+  bottom=0.5in
+}
 
 \title{MSP Report - Sprint 1}
 \author{Franka Traupe, Roschanak Babai, Niklas Sander, Valeriia Baida, Guilherme Fernandes}
@@ -117,9 +122,19 @@
 \end{figure}
 
   
+\clearpage
+\section*{Requirements Diagram}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/SysML_Req.png}
+    \caption{Requirements Diagram}
+    \label{fig:requirements_diagram}
+\end{figure}
 
+  
+\clearpage
 
-\section*{Match from Features to Models}
+\section*{Mapping from Features to Models}
 
 \begin{longtable}{|>{\raggedright}p{0.4\textwidth}|>{\raggedright\arraybackslash}p{0.5\textwidth}|}
 \hline
@@ -159,20 +174,10 @@ Register vehicle type & MyWaze.bpmn, MyWaze\_registerVehicleType.bpmn \\
 \hline
 \end{longtable}
 
-\clearpage
-\section*{Requirements Diagram}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{images/SysML_Req.png}
-    \caption{Requirements Diagram}
-    \label{fig:requirements_diagram}
-\end{figure}
-
-\clearpage
-
 \section*{BPMN Models}
 \input{models_list.tex}
 
+  
 \clearpage
 
 \section*{Prototype}
