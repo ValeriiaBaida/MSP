@@ -161,7 +161,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
         wheelPxPerZoomLevel={60}
       >
         <TileLayer
-          attribution="&copy; OpenStreetMap contributors"
+          attribution="&copy; OpenStreetMap contributors | Icons by <a href='https://icons8.com' target='_BLANK'>icons8.com</a>"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
