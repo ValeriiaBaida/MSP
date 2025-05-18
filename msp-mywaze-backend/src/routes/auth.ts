@@ -8,6 +8,11 @@ interface UserPreferenceRow {
     value: string;
 }
 
+interface UserBookmarkRow {
+    bookmark_name: string;
+    bookmark_value: string;
+}
+
 const getUserPreferences = (email: string): Record<string, string> => {
     const stmt = db.prepare('SELECT setting, value FROM user_preferences WHERE email = ?');
     const rows = stmt.all(email) as UserPreferenceRow[];
@@ -19,6 +24,18 @@ const getUserPreferences = (email: string): Record<string, string> => {
 
     return preferences;
 };
+
+const getUserBookmarks = (email: string): Record<string, string> => {
+    const stmt = db.prepare('SELECT bookmark_name, bookmark_value FROM bookmarks WHERE email = ?');
+    const rows = stmt.all(email) as UserBookmarkRow[];
+
+    const bookmarks: Record<string, string> = {};
+    for (const row of rows) {
+        bookmarks[row.bookmark_name] = row.bookmark_value;
+    }
+
+    return bookmarks;
+}
 
 // Login Endpoint
 router.post('/login', async (req: Request, res: Response): Promise<any> => {
@@ -34,11 +51,13 @@ router.post('/login', async (req: Request, res: Response): Promise<any> => {
 
     if (user) {
       const preferences = getUserPreferences(email);
+      const bookmarks = getUserBookmarks(email);
 
       return res.status(200).json({
         user: {
           email,
           preferences,
+          bookmarks
         },
       });
     } else {

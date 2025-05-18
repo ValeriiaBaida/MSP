@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import './AuthPage.css';
-import { useAuth } from '../context/AuthContext';
+import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 const AuthPage: React.FC = () => {
   const [isRegistering, setIsRegistering] = useState(false);
-  const { login, register } = useAuth();
+  const { login, register } = useUser();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');

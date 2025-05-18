@@ -1,0 +1,23 @@
+.leaflet-popup-content {
+  position: relative;
+  padding-left: 24px; /* ensures space for the icon */
+  margin: 0 !important;
+  line-height: 1.2;
+}
+
+.leaflet-popup-content .popup-bookmark-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.leaflet-popup-close-button {
+  display: none !important;
+}
+
+.leaflet-popup-content-wrapper {
+  padding: 10px 12px !important; /* more compact padding */
+}

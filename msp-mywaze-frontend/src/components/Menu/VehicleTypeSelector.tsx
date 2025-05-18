@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import './VehicleTypeSelector.css';
-import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext';
 
 type VehicleType = 'taxi' | 'car' | 'motorbike';
 
 const VehicleTypeSelector: React.FC = () => {
-  const { credentials, updatePreference } = useAuth();
+  const { userData, updatePreference } = useUser();
   const [selected, setSelected] = useState<VehicleType>('car');
 
   useEffect(() => {
-    const initial = (credentials?.preferences?.vehicle_type || 'car') as VehicleType;
+    const initial = (userData?.preferences?.vehicle_type || 'car') as VehicleType;
     setSelected(initial);
-  }, [credentials]);
+  }, [userData]);
 
   const handleSelect = async (type: VehicleType) => {
-    if (!credentials?.email) {
+    if (!userData?.email) {
       console.error('No user email available');
       return;
     }
@@ -28,7 +28,7 @@ const VehicleTypeSelector: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: credentials.email,
+          email: userData.email,
           setting: 'vehicle_type',
           value: type,
         }),

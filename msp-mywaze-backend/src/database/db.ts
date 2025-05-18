@@ -8,9 +8,10 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir);
 }
 
-// Create / open the database inside /data/users.db
+// Create / open sqlite database inside /data/users.db
 const db = new Database(path.join(__dirname, '../../data/users.db'));
 
+// Initialization of tables (if they don't exist)
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +26,15 @@ db.exec(`
       setting TEXT NOT NULL,
       value TEXT NOT NULL,
       PRIMARY KEY (email, setting)
+    );
+  `);
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS bookmarks (
+      email TEXT NOT NULL,
+      bookmark_name TEXT NOT NULL,
+      bookmark_value TEXT NOT NULL,
+      PRIMARY KEY (email, bookmark_name)
     );
   `);
 

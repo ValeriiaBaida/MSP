@@ -4,22 +4,24 @@ interface User {
   email: string;
   password: string;
   preferences: Record<string, string>;
+  bookmarks: Record<string, string>;
 }
 
-interface AuthContextType {
+interface UserContextType {
   isLoggedIn: boolean;
-  credentials: User | null;
+  userData: User | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updatePreference: (setting: string, value: string) => void;
+  updateBookmark: (bookmarkName: string, bookmarkValue: string) => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [credentials, setCredentials] = useState<User | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
     try {
@@ -38,10 +40,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const data = await response.json();
 
-      setCredentials({
+      setUserData({
         email,
         password,
         preferences: data.user.preferences || {},
+        bookmarks: data.user.bookmarks || {},
       });
       setIsLoggedIn(true);
     } catch (error) {
@@ -66,10 +69,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const data = await response.json();
 
-      setCredentials({
+      setUserData({
         email,
         password,
         preferences: data.user.preferences || {},
+        bookmarks: data.user.bookmarks || {},
       });
       setIsLoggedIn(true);
     } catch (error) {
@@ -79,7 +83,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updatePreference = (setting: string, value: string) => {
-    setCredentials((prev) => {
+    setUserData((prev) => {
       if (!prev) return null;
       return {
         ...prev,
@@ -91,20 +95,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
+  const updateBookmark = (bookmarkName: string, bookmarkValue: string) => {
+    setUserData((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        bookmarks: {
+          ...prev.bookmarks,
+          [bookmarkName]: bookmarkValue,
+        },
+      };
+    });
+  };
+
   const logout = () => {
     setIsLoggedIn(false);
-    setCredentials(null);
+    setUserData(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, credentials, login, register, logout, updatePreference }}>
-          {children}
-    </AuthContext.Provider>
+    <UserContext.Provider value={{ isLoggedIn, userData: userData, login, register, logout, updatePreference, updateBookmark }}>
+      {children}
+    </UserContext.Provider>
   );
 };
 
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
+export const useUser = (): UserContextType => {
+  const context = useContext(UserContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
