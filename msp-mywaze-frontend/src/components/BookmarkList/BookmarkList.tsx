@@ -40,6 +40,12 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ onSelect }) => {
     }
   };
 
+  const renderIcon = (label: string) => {
+    if (label === 'Home') return <img src="/home.png" alt="Home" className="bookmark-icon" />;
+    if (label === 'Work') return <img src="/work.png" alt="Work" className="bookmark-icon" />;
+    return null;
+  };
+
   return (
     <div className="bookmarks-container">
       {bookmarks.map(([label, value]) => (
@@ -48,8 +54,7 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ onSelect }) => {
           className="bookmark-bubble"
           onClick={() => handleSelect(label, value)}
         >
-          {label === 'Home' && '🏠 '}
-          {label === 'Work' && '💼 '}
+          {renderIcon(label)}
           {label}
         </div>
       ))}
