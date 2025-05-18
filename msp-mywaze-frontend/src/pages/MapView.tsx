@@ -4,6 +4,7 @@ import SearchBar from '../components/Input/SearchBar';
 import RouteMap from '../components/Map/RouteMap';
 import UserMenu from '../components/Menu/UserMenu';
 import BookmarkList from '../components/BookmarkList/BookmarkList';
+import SpeedDisplay from '../components/SpeedDisplay/SpeedDisplay';
 
 import random from 'random';
 
@@ -18,6 +19,7 @@ type Destination = string | NamedCoordinates;
 const MapView: React.FC = () => {
   const [currentLocation, setCurrentLocation] = useState<[number, number] | null>(null);
   const [speed, setSpeed] = useState<number | null>(null);
+  const [speedLimit, setSpeedLimit] = useState<number | null>(null);
   const [destination, setDestination] = useState('');
   const [submittedDestination, setSubmittedDestination] = useState<Destination>('');
 
@@ -40,14 +42,32 @@ const MapView: React.FC = () => {
     }
 
     const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
+      async (pos) => {
         const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
         setCurrentLocation(coords);
 
-        if (pos.coords.speed !== null) {
-          setSpeed(pos.coords.speed);
-        } else {
-          setSpeed(13); // Simulate usable speed on desktop
+        setSpeed(pos.coords.speed !== null ? pos.coords.speed : 13);
+
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/speedlimit/get?lat=${coords[0]}&lon=${coords[1]}`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch speed limit');
+          }
+
+          const data = await response.json();
+          setSpeedLimit(parseInt(data.speedLimit) ?? null);
+        } catch (error) {
+          console.error('Error retrieving speed limit:', error);
+          setSpeedLimit(null);
         }
       },
       (err) => {
@@ -66,6 +86,7 @@ const MapView: React.FC = () => {
       navigator.geolocation.clearWatch(watchId);
     };
   }, []);
+
 
   return (
     <div style={{ height: '100vh', width: '100vw', position: 'relative' }}>
@@ -87,23 +108,7 @@ const MapView: React.FC = () => {
       />
 
       {speed !== null && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 20,
-            right: 20,
-            backgroundColor: 'white',
-            padding: '8px 12px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-            fontSize: '14px',
-            color: speed * 3.6 > 50 ? 'red' : '#333',
-            zIndex: 1000,
-          }}
-          onClick={() => setSpeed(random.normal(14, 5)())}
-        >
-          Speed: {(speed * 3.6).toFixed(1)} km/h
-        </div>
+        <SpeedDisplay speed={speed} speedLimit={speedLimit ?? undefined} onClick={() => setSpeed(random.normal(14, 5)())} />
       )}
     </div>
   );
