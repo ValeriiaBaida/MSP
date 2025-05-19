@@ -18,9 +18,9 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ onSelect }) => {
 
   if (bookmarks.length === 0) return null;
 
-  const handleSelect = (label: string, value: string) => {
+  const handleSelect = (label: string, value: { lat: number; lon: number; name: string }) => {
     try {
-      const parsed = JSON.parse(value);
+      const parsed = value;
       if (
         parsed &&
         typeof parsed.lat === 'number' &&

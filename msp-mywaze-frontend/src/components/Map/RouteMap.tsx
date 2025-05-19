@@ -113,11 +113,11 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
     const bookmarkValue = {
       lat: destinationCoords[0],
       lon: destinationCoords[1],
-      name: name || destinationNameDisplay,
+      name: name || destinationNameDisplay || 'No Name',
     };
 
     try {
-      await updateBookmark(name, JSON.stringify(bookmarkValue));
+      await updateBookmark(name, bookmarkValue);
       console.log(`Saved bookmark '${name}' -> ${JSON.stringify(bookmarkValue)} for user ${userData.email}`);
     } catch (error) {
       console.error('Error saving bookmark:', error);

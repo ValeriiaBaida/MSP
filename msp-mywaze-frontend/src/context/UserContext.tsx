@@ -9,7 +9,7 @@ interface User {
   email: string;
   password: string;
   preferences: Record<string, string>;
-  bookmarks: Record<string, string>;
+  bookmarks: Record<string, { lat: number; lon: number; name: string }>;
 }
 
 interface UserContextType {
@@ -19,7 +19,7 @@ interface UserContextType {
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updatePreference: (setting: string, value: string) => void;
-  updateBookmark: (bookmarkName: string, bookmarkValue: string) => void;
+  updateBookmark: (bookmarkName: string, bookmarkValue: { lat: number; lon: number; name: string }) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -29,36 +29,51 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [userData, setUserData] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
-    try {
-      const user = await authClient.login(email, password);
-      setUserData({
-        email,
-        password,
-        preferences: user.preferences || {},
-        bookmarks: user.bookmarks || {},
-      });
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
-    }
-  };
+  try {
+    const user = await authClient.login(email, password);
+    const parsedBookmarks = user.bookmarks
+      ? Object.fromEntries(
+          Object.entries(user.bookmarks).map(([key, value]) => [key, JSON.parse(value)])
+        )
+      : {};
+
+    setUserData({
+      email,
+      password,
+      preferences: user.preferences || {},
+      bookmarks: parsedBookmarks,
+    });
+    setIsLoggedIn(true);
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
+};
 
   const register = async (email: string, password: string) => {
-    try {
-      const user = await authClient.register(email, password);
-      setUserData({
-        email,
-        password,
-        preferences: user.preferences || {},
-        bookmarks: user.bookmarks || {},
-      });
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error('Registration failed:', error);
-      throw error;
-    }
-  };
+  try {
+    const user = await authClient.register(email, password);
+    const parsedBookmarks = user.bookmarks
+    ? Object.fromEntries(
+        Object.entries(user.bookmarks).map(([key, value]) => [
+          key,
+          typeof value === 'string' ? JSON.parse(value) : value,
+        ])
+      )
+    : {};
+
+    setUserData({
+      email,
+      password,
+      preferences: user.preferences || {},
+      bookmarks: parsedBookmarks,
+    });
+    setIsLoggedIn(true);
+  } catch (error) {
+    console.error('Registration failed:', error);
+    throw error;
+  }
+};
 
   const updatePreference = async (setting: string, value: string) => {
     if (!userData) return;
@@ -79,7 +94,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateBookmark = async (bookmarkName: string, bookmarkValue: string) => {
+  const updateBookmark = async (bookmarkName: string, bookmarkValue: { lat: number; lon: number; name: string }) => {
     if (!userData) return;
     try {
       await bookmarksClient.saveBookmark(userData.email, bookmarkName, bookmarkValue);
