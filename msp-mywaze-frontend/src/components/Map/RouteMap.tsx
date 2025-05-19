@@ -6,6 +6,7 @@ import ZoomToRoute from './RouteZoomHandler';
 import DestinationMarker from './DestinationMarker';
 import BookmarkModal from './BookmarkModal';
 import { useUser } from '../../context/UserContext';
+import { geocodeDestination, getRoute } from '../../api/routingClient';
 import './RouteMap.css';
 
 interface NamedCoordinates {
@@ -52,10 +53,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
       }
 
       try {
-        const geocodeRes = await fetch(
-          `http://localhost:3000/api/routing/geocode?destination=${encodeURIComponent(destination)}`
-        );
-        const geocodeData = await geocodeRes.json();
+        const geocodeData = await geocodeDestination(destination);
 
         if (!geocodeData.features || geocodeData.features.length === 0) {
           console.error('No geocoding results found.');
@@ -80,16 +78,10 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
       if (!currentLocation || !destinationCoords) return;
 
       try {
-        const routeRes = await fetch('http://localhost:3000/api/routing/route', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            start: [currentLocation[1], currentLocation[0]],
-            end: [destinationCoords[1], destinationCoords[0]],
-          }),
-        });
-
-        const routeData = await routeRes.json();
+        const routeData = await getRoute(
+          [currentLocation[1], currentLocation[0]],
+          [destinationCoords[1], destinationCoords[0]]
+        );
 
         if (!routeData.features || routeData.features.length === 0) {
           console.error('No route data found.');
@@ -125,24 +117,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/bookmarks/set', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          bookmark_name: name,
-          bookmark_value: bookmarkValue,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error('Failed to save bookmark');
-        return;
-      }
-
-      updateBookmark(name, JSON.stringify(bookmarkValue));
+      await updateBookmark(name, JSON.stringify(bookmarkValue));
       console.log(`Saved bookmark '${name}' -> ${JSON.stringify(bookmarkValue)} for user ${userData.email}`);
     } catch (error) {
       console.error('Error saving bookmark:', error);
@@ -161,7 +136,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
         wheelPxPerZoomLevel={60}
       >
         <TileLayer
-          attribution="&copy; OpenStreetMap contributors | Icons by <a href='https://icons8.com' target='_BLANK'>icons8.com</a>"
+          attribution="&copy; OpenStreetMap contributors | Icons by <a href='https://icons8.com' target='_BLANK'>icons8</a>"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 

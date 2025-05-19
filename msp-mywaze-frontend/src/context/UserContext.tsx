@@ -1,4 +1,9 @@
+// UserProvider.tsx
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import * as authClient from '../api/authClient';
+import * as preferencesClient from '../api/preferencesClient';
+import * as bookmarksClient from '../api/bookmarksClient';
 
 interface User {
   email: string;
@@ -25,26 +30,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Basic ' + btoa(email + ':' + password),
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Invalid login credentials');
-      }
-
-      const data = await response.json();
-
+      const user = await authClient.login(email, password);
       setUserData({
         email,
         password,
-        preferences: data.user.preferences || {},
-        bookmarks: data.user.bookmarks || {},
+        preferences: user.preferences || {},
+        bookmarks: user.bookmarks || {},
       });
       setIsLoggedIn(true);
     } catch (error) {
@@ -55,25 +46,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const register = async (email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Registration failed');
-      }
-
-      const data = await response.json();
-
+      const user = await authClient.register(email, password);
       setUserData({
         email,
         password,
-        preferences: data.user.preferences || {},
-        bookmarks: data.user.bookmarks || {},
+        preferences: user.preferences || {},
+        bookmarks: user.bookmarks || {},
       });
       setIsLoggedIn(true);
     } catch (error) {
@@ -82,30 +60,42 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updatePreference = (setting: string, value: string) => {
-    setUserData((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        preferences: {
-          ...prev.preferences,
-          [setting]: value,
-        },
-      };
-    });
+  const updatePreference = async (setting: string, value: string) => {
+    if (!userData) return;
+    try {
+      await preferencesClient.savePreference(userData.email, setting, value);
+      setUserData((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          preferences: {
+            ...prev.preferences,
+            [setting]: value,
+          },
+        };
+      });
+    } catch (err) {
+      console.error('Failed to update preference:', err);
+    }
   };
 
-  const updateBookmark = (bookmarkName: string, bookmarkValue: string) => {
-    setUserData((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        bookmarks: {
-          ...prev.bookmarks,
-          [bookmarkName]: bookmarkValue,
-        },
-      };
-    });
+  const updateBookmark = async (bookmarkName: string, bookmarkValue: string) => {
+    if (!userData) return;
+    try {
+      await bookmarksClient.saveBookmark(userData.email, bookmarkName, bookmarkValue);
+      setUserData((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          bookmarks: {
+            ...prev.bookmarks,
+            [bookmarkName]: bookmarkValue,
+          },
+        };
+      });
+    } catch (err) {
+      console.error('Failed to update bookmark:', err);
+    }
   };
 
   const logout = () => {
@@ -114,7 +104,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <UserContext.Provider value={{ isLoggedIn, userData: userData, login, register, logout, updatePreference, updateBookmark }}>
+    <UserContext.Provider
+      value={{
+        isLoggedIn,
+        userData,
+        login,
+        register,
+        logout,
+        updatePreference,
+        updateBookmark,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

@@ -5,6 +5,7 @@ import RouteMap from '../components/Map/RouteMap';
 import UserMenu from '../components/Menu/UserMenu';
 import BookmarkList from '../components/BookmarkList/BookmarkList';
 import SpeedDisplay from '../components/SpeedDisplay/SpeedDisplay';
+import { getSpeedLimit } from '../api/speedlimitClient';
 
 import random from 'random';
 
@@ -45,25 +46,10 @@ const MapView: React.FC = () => {
       async (pos) => {
         const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
         setCurrentLocation(coords);
-
         setSpeed(pos.coords.speed !== null ? pos.coords.speed : 13);
 
         try {
-          const response = await fetch(
-            `http://localhost:3000/api/speedlimit/get?lat=${coords[0]}&lon=${coords[1]}`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch speed limit');
-          }
-
-          const data = await response.json();
+          const data = await getSpeedLimit(coords[0], coords[1]);
           setSpeedLimit(parseInt(data.speedLimit) ?? null);
         } catch (error) {
           console.error('Error retrieving speed limit:', error);
@@ -87,7 +73,6 @@ const MapView: React.FC = () => {
     };
   }, []);
 
-
   return (
     <div style={{ height: '100vh', width: '100vw', position: 'relative' }}>
       <SearchBar
@@ -108,7 +93,11 @@ const MapView: React.FC = () => {
       />
 
       {speed !== null && (
-        <SpeedDisplay speed={speed} speedLimit={speedLimit ?? undefined} onClick={() => setSpeed(random.normal(14, 5)())} />
+        <SpeedDisplay
+          speed={speed}
+          speedLimit={speedLimit ?? undefined}
+          onClick={() => setSpeed(random.normal(14, 5)())}
+        />
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './VehicleTypeSelector.css';
 import { useUser } from '../../context/UserContext';
+import { savePreference } from '../../api/preferencesClient';
 
 type VehicleType = 'taxi' | 'car' | 'motorbike';
 
@@ -22,18 +23,8 @@ const VehicleTypeSelector: React.FC = () => {
     setSelected(type);
 
     try {
-      await fetch('http://localhost:3000/api/preferences/set', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          setting: 'vehicle_type',
-          value: type,
-        }),
-      });
-      updatePreference('vehicle_type', type); //locally update the preference
+      await savePreference(userData.email, 'vehicle_type', type);
+      updatePreference('vehicle_type', type);
       console.log('Vehicle type preference updated to', type);
     } catch (error) {
       console.error('Failed to update vehicle type preference:', error);
