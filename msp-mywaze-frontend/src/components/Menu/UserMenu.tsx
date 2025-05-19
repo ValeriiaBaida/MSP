@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './UserMenu.css';
-import { useNavigate } from 'react-router-dom';
 import LogoutItem from './LogoutItem';
 import VehicleTypeSelector from './VehicleTypeSelector';
 
 const UserMenu: React.FC = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setOpen(prev => !prev);
@@ -26,17 +24,14 @@ const UserMenu: React.FC = () => {
     };
   }, []);
 
-  const handleMenuItemClick = (path: string) => {
-    setOpen(false);
-    navigate(path);
-  };
-
   return (
     <div className="user-menu-container" ref={menuRef}>
+      { /* Always visible menu button */ }
       <button className="user-menu-button" onClick={toggleMenu}>
         <img src="/user-settings.svg" alt="Settings" className="user-menu-icon" />
       </button>
 
+      { /* Toggleable menu contents */ }
       {open && (
         <div className="user-menu-dropdown">
           <div className="user-menu-item nohover"><LogoutItem /></div>

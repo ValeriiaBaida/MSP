@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import 'leaflet/dist/leaflet.css';
+import './mapView.css';
 import SearchBar from '../components/Input/SearchBar';
 import RouteMap from '../components/Map/RouteMap';
 import UserMenu from '../components/Menu/UserMenu';
 import BookmarkList from '../components/BookmarkList/BookmarkList';
 import SpeedDisplay from '../components/SpeedDisplay/SpeedDisplay';
-import { getSpeedLimit } from '../api/speedlimitClient';
+import { useLiveLocation } from '../hooks/useLiveLocation';
 
-import random from 'random';
+import random from 'random'; // Used only for debugging feature for speed warnings below
 
+// Bookmark Format 
 interface NamedCoordinates {
   lat: number;
   lon: number;
@@ -18,12 +20,11 @@ interface NamedCoordinates {
 type Destination = string | NamedCoordinates;
 
 const MapView: React.FC = () => {
-  const [currentLocation, setCurrentLocation] = useState<[number, number] | null>(null);
-  const [speed, setSpeed] = useState<number | null>(null);
-  const [speedLimit, setSpeedLimit] = useState<number | null>(null);
-  const [destination, setDestination] = useState('');
+  const { location: currentLocation, speed, speedLimit, setSpeed } = useLiveLocation();
+  const [destination, setDestination] = useState(''); // Search Input
   const [submittedDestination, setSubmittedDestination] = useState<Destination>('');
 
+  // Set Destination by Search Input
   const handleSearch = () => {
     if (!currentLocation) {
       alert('Location access is required for routing.');
@@ -32,49 +33,13 @@ const MapView: React.FC = () => {
     setSubmittedDestination(destination);
   };
 
+  // Set Destination by Bookmark Selection 
   const handleBookmarkSelect = (destinationObj: NamedCoordinates) => {
     setSubmittedDestination(destinationObj);
   };
 
-  useEffect(() => {
-    if (!navigator.geolocation) {
-      console.error('Geolocation is not supported by your browser');
-      return;
-    }
-
-    const watchId = navigator.geolocation.watchPosition(
-      async (pos) => {
-        const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
-        setCurrentLocation(coords);
-        setSpeed(pos.coords.speed !== null ? pos.coords.speed : 13);
-
-        try {
-          const data = await getSpeedLimit(coords[0], coords[1]);
-          setSpeedLimit(parseInt(data.speedLimit) ?? null);
-        } catch (error) {
-          console.error('Error retrieving speed limit:', error);
-          setSpeedLimit(null);
-        }
-      },
-      (err) => {
-        if (err.code !== 2) {
-          console.error('Error watching location:', err);
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 10000,
-      }
-    );
-
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, []);
-
   return (
-    <div style={{ height: '100vh', width: '100vw', position: 'relative' }}>
+    <div className="map-view">
       <SearchBar
         onSearch={handleSearch}
         setDestination={setDestination}
@@ -83,9 +48,7 @@ const MapView: React.FC = () => {
 
       <BookmarkList onSelect={handleBookmarkSelect} />
 
-      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}>
-        <UserMenu />
-      </div>
+      <UserMenu />
 
       <RouteMap
         currentLocation={currentLocation}
@@ -96,7 +59,7 @@ const MapView: React.FC = () => {
         <SpeedDisplay
           speed={speed}
           speedLimit={speedLimit ?? undefined}
-          onClick={() => setSpeed(random.normal(14, 5)())}
+          onClick={() => setSpeed(random.normal(14, 5)())} // This is a prototype-only feature to test speed alerts
         />
       )}
     </div>

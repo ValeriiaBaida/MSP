@@ -3,7 +3,7 @@ import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 const LogoutItem: React.FC = () => {
-  const { logout, userData: credentials } = useUser();
+  const { logout, userData } = useUser();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -16,7 +16,7 @@ const LogoutItem: React.FC = () => {
   return (
     <>
         <span className="logout-greeting">
-            Welcome back,<br />{credentials!.email}
+            Welcome back,<br />{userData!.email}
         </span>
         &nbsp;(
         <a onClick={handleLogout} href="#" className="logout-button">

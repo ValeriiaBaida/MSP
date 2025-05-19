@@ -42,7 +42,7 @@ const AuthPage: React.FC = () => {
 
   const handleConfirmation = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate success and navigate for now
+    // Simulate success for the prototype
     navigate('/');
   };
 
@@ -108,7 +108,7 @@ const AuthPage: React.FC = () => {
         ) : (
           <>
             <p>We've sent a 6-digit confirmation code to your email.</p>
-            <small>In the prototype, you can enter any code to continue</small>
+            <small><i>In the prototype, you can enter any code to continue</i></small>
             <input
               type="text"
               placeholder="Enter 6-digit code"
