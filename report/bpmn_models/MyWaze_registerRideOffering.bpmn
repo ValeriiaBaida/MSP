@@ -41,7 +41,7 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0968byd">
       <bpmndi:BPMNShape id="Participant_1rboytr_di" bpmnElement="Participant_1rboytr" isHorizontal="true">
-        <dc:Bounds x="-1390" y="2600" width="530" height="230" />
+        <dc:Bounds x="-1390" y="2610" width="530" height="220" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_051w0fs_di" bpmnElement="Event_051w0fs">
@@ -85,7 +85,7 @@
         <di:waypoint x="-928" y="2670" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Participant_1ipy55j_di" bpmnElement="Participant_0tpdubp" isHorizontal="true">
-        <dc:Bounds x="-1390" y="2510" width="530" height="60" />
+        <dc:Bounds x="-1390" y="2520" width="530" height="60" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DataOutputAssociation_1lio25y_di" bpmnElement="DataOutputAssociation_1lio25y">
@@ -102,7 +102,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1cpdp5z_di" bpmnElement="Flow_1cpdp5z">
         <di:waypoint x="-1040" y="2630" />
-        <di:waypoint x="-1040" y="2570" />
+        <di:waypoint x="-1040" y="2580" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
