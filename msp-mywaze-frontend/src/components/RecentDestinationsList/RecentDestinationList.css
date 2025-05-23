@@ -1,0 +1,15 @@
+.recent-destination-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.recent-destination-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.recent-destination-item:hover {
+  background-color: #f0f0f0;
+}
