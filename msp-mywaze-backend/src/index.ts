@@ -4,6 +4,7 @@ import authRoutes from './routes/auth';
 import preferencesRoutes from './routes/preferences';
 import bookmarksRoutes from './routes/bookmarks';
 import speedlimitRoutes from './routes/speedlimit';
+import hazardRoutes from './routes/hazards';
 import cors from 'cors';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/preferences', preferencesRoutes);
 app.use('/api/bookmarks', bookmarksRoutes);
 app.use('/api/speedlimit', speedlimitRoutes);
+app.use('/api/hazards', hazardRoutes);
 
 app.listen(port, () => {
   console.log(`Backend server running at http://localhost:${port}`);

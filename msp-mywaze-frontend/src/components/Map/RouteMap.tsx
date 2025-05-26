@@ -8,6 +8,9 @@ import BookmarkModal from './BookmarkModal';
 import { useUser } from '../../context/UserContext';
 import { geocodeDestination, getRoute } from '../../api/routingClient';
 import './RouteMap.css';
+import { Marker, Popup } from 'react-leaflet';
+import { useHazardEventSource } from '../../hooks/useHazardEventSource';
+import { hazardMarkerIcon } from './Icons';
 
 interface NamedCoordinates {
   lat: number;
@@ -41,6 +44,8 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
   const { userData, updateBookmark } = useUser();
 
   const destinationMarkerRef = useRef<LeafletMarker | null>(null);
+
+  const hazards = useHazardEventSource();
 
   useEffect(() => {
     const resolveDestination = async () => {
@@ -157,6 +162,16 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
             markerRef={destinationMarkerRef}
           />
         )}
+
+        {hazards.map((hazard, index) => (
+          <Marker
+            key={`hazard-${index}`}
+            position={[hazard.lat, hazard.lon]}
+            icon={hazardMarkerIcon}
+          >
+            <Popup>{hazard.name}</Popup>
+          </Marker>
+        ))}
       </MapContainer>
 
       <BookmarkModal

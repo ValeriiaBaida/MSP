@@ -7,6 +7,7 @@ import UserMenu from '../components/Menu/UserMenu';
 import BookmarkList from '../components/BookmarkList/BookmarkList';
 import SpeedDisplay from '../components/SpeedDisplay/SpeedDisplay';
 import { useLiveLocation } from '../hooks/useLiveLocation';
+import ReportHazardButton from '../components/HazardReporting/ReportHazardButton';
 
 import random from 'random'; // Used only for debugging feature for speed warnings below
 
@@ -62,6 +63,8 @@ const MapView: React.FC = () => {
           onClick={() => setSpeed(random.normal(14, 5)())} // This is a prototype-only feature to test speed alerts
         />
       )}
+
+      <ReportHazardButton location={currentLocation} />
     </div>
   );
 };
