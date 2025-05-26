@@ -2,6 +2,7 @@ export interface User {
   email: string;
   preferences: Record<string, string>;
   bookmarks?: Record<string, string>;
+  recentDestinations?: Record<string, string>;
 }
 
 export interface LoginResponse {

@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Polyline } from 'react-leaflet';
-import { Marker as LeafletMarker } from 'leaflet';
-import UserLocation from './UserLocation';
-import ZoomToRoute from './RouteZoomHandler';
-import DestinationMarker from './DestinationMarker';
-import BookmarkModal from './BookmarkModal';
-import { useUser } from '../../context/UserContext';
-import { geocodeDestination, getRoute } from '../../api/routingClient';
-import './RouteMap.css';
+import React, { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, Polyline } from "react-leaflet";
+import { Marker as LeafletMarker } from "leaflet";
+import UserLocation from "./UserLocation";
+import ZoomToRoute from "./RouteZoomHandler";
+import DestinationMarker from "./DestinationMarker";
+import BookmarkModal from "./BookmarkModal";
+import { useUser } from "../../context/UserContext";
+import { geocodeDestination, getRoute } from "../../api/routingClient";
+import "./RouteMap.css";
 
 interface NamedCoordinates {
   lat: number;
@@ -24,21 +24,28 @@ interface RouteMapProps {
 
 const isNamedCoordinates = (value: Destination): value is NamedCoordinates => {
   return (
-    typeof value === 'object' &&
+    typeof value === "object" &&
     value !== null &&
-    typeof (value as any).lat === 'number' &&
-    typeof (value as any).lon === 'number' &&
-    typeof (value as any).name === 'string'
+    typeof (value as any).lat === "number" &&
+    typeof (value as any).lon === "number" &&
+    typeof (value as any).name === "string"
   );
 };
 
-const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => {
+const RouteMap: React.FC<RouteMapProps> = ({
+  currentLocation,
+  destination,
+}) => {
   const [route, setRoute] = useState<[number, number][]>([]);
-  const [destinationCoords, setDestinationCoords] = useState<[number, number] | null>(null);
-  const [destinationNameDisplay, setDestinationNameDisplay] = useState<string | null>(null);
+  const [destinationCoords, setDestinationCoords] = useState<
+    [number, number] | null
+  >(null);
+  const [destinationNameDisplay, setDestinationNameDisplay] = useState<
+    string | null
+  >(null);
   const [eta, setEta] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const { userData, updateBookmark } = useUser();
+  const { userData, updateBookmark, updateRecentDestination } = useUser();
 
   const destinationMarkerRef = useRef<LeafletMarker | null>(null);
 
@@ -56,7 +63,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
         const geocodeData = await geocodeDestination(destination);
 
         if (!geocodeData.features || geocodeData.features.length === 0) {
-          console.error('No geocoding results found.');
+          console.error("No geocoding results found.");
           return;
         }
 
@@ -66,7 +73,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
         setDestinationCoords([lat, lon]);
         setDestinationNameDisplay(name);
       } catch (error) {
-        console.error('Error resolving destination:', error);
+        console.error("Error resolving destination:", error);
       }
     };
 
@@ -77,6 +84,8 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
     const fetchRoute = async () => {
       if (!currentLocation || !destinationCoords) return;
 
+      handleRecentDestinationSave();
+
       try {
         const routeData = await getRoute(
           [currentLocation[1], currentLocation[0]],
@@ -84,7 +93,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
         );
 
         if (!routeData.features || routeData.features.length === 0) {
-          console.error('No route data found.');
+          console.error("No route data found.");
           return;
         }
 
@@ -93,14 +102,15 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
         );
         setRoute(coords);
 
-        const durationSeconds = routeData.features[0].properties.summary.duration;
+        const durationSeconds =
+          routeData.features[0].properties.summary.duration;
         const durationMinutes = Math.round(durationSeconds / 60);
         const arrivalTime = new Date(Date.now() + durationSeconds * 1000);
-        const hours = arrivalTime.getHours().toString().padStart(2, '0');
-        const minutes = arrivalTime.getMinutes().toString().padStart(2, '0');
+        const hours = arrivalTime.getHours().toString().padStart(2, "0");
+        const minutes = arrivalTime.getMinutes().toString().padStart(2, "0");
         setEta(`${hours}:${minutes} (${durationMinutes} min)`);
       } catch (error) {
-        console.error('Error fetching route:', error);
+        console.error("Error fetching route:", error);
       }
     };
 
@@ -113,14 +123,39 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
     const bookmarkValue = {
       lat: destinationCoords[0],
       lon: destinationCoords[1],
-      name: name || destinationNameDisplay || 'No Name',
+      name: name || destinationNameDisplay || "No Name",
     };
 
     try {
       await updateBookmark(name, bookmarkValue);
-      console.log(`Saved bookmark '${name}' -> ${JSON.stringify(bookmarkValue)} for user ${userData.email}`);
+      console.log(
+        `Saved bookmark '${name}' -> ${JSON.stringify(
+          bookmarkValue
+        )} for user ${userData.email}`
+      );
     } catch (error) {
-      console.error('Error saving bookmark:', error);
+      console.error("Error saving bookmark:", error);
+    }
+  };
+
+  const handleRecentDestinationSave = async () => {
+    if (!destinationCoords || !userData) return;
+
+    const destinationValue = {
+      lat: destinationCoords[0],
+      lon: destinationCoords[1],
+      name: destinationNameDisplay || "No Name",
+    };
+
+    try {
+      await updateRecentDestination(destinationValue.name, destinationValue);
+      console.log(
+        `Saved recent destination '${
+          destinationValue.name
+        }' -> ${JSON.stringify(destinationValue)} for user ${userData.email}`
+      );
+    } catch (error) {
+      console.error("Error saving recentDestination:", error);
     }
   };
 

@@ -2,23 +2,26 @@ import React, { useState } from "react";
 import "./SearchBar.css";
 import RecentDestinationList from "../RecentDestinationsList/RecentDestinationList";
 
+interface NamedCoordinates {
+  lat: number;
+  lon: number;
+  name: string;
+}
+
 interface SearchBarProps {
   destination: string;
   setDestination: (dest: string) => void;
   onSearch: () => void;
+  onRecentDestinationSelect: (destination: NamedCoordinates) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   destination,
   setDestination,
   onSearch,
+  onRecentDestinationSelect,
 }) => {
   const [showRecentDestinations, setShowRecentDestinations] = useState(false);
-
-  const handleRecentDestinations = (value: string) => {
-    setDestination(value);
-    onSearch();
-  };
 
   return (
     <div className="search-bar-wrapper">
@@ -53,7 +56,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
       {showRecentDestinations && (
         <div className="dropdown-container">
-          <RecentDestinationList onSelect={handleRecentDestinations} />
+          <RecentDestinationList onSelect={onRecentDestinationSelect} />
         </div>
       )}
     </div>

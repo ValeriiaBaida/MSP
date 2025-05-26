@@ -13,6 +13,11 @@ interface UserBookmarkRow {
     bookmark_value: string;
 }
 
+interface UserRecentDestinationRow {
+    destination_name: string;
+    destination_value: string;
+}
+
 const getUserPreferences = (email: string): Record<string, string> => {
     const stmt = db.prepare('SELECT setting, value FROM user_preferences WHERE email = ?');
     const rows = stmt.all(email) as UserPreferenceRow[];
@@ -37,6 +42,18 @@ const getUserBookmarks = (email: string): Record<string, string> => {
     return bookmarks;
 }
 
+const getUserRecentDestinations = (email: string): Record<string, string> => {
+    const stmt = db.prepare('SELECT destination_name, destination_value FROM recent_destinations WHERE email = ? ORDER BY created_at DESC LIMIT 5');
+    const rows = stmt.all(email) as UserRecentDestinationRow[];
+
+    const recentDestiantions: Record<string, string> = {};
+    for (const row of rows) {
+        recentDestiantions[row.destination_name] = row.destination_value;
+    }
+
+    return recentDestiantions;
+}
+
 // Login Endpoint
 router.post('/login', async (req: Request, res: Response): Promise<any> => {
   const { email, password } = req.body;
@@ -52,12 +69,14 @@ router.post('/login', async (req: Request, res: Response): Promise<any> => {
     if (user) {
       const preferences = getUserPreferences(email);
       const bookmarks = getUserBookmarks(email);
+      const recentDestinations = getUserRecentDestinations(email);
 
       return res.status(200).json({
         user: {
           email,
           preferences,
-          bookmarks
+          bookmarks,
+          recentDestinations,
         },
       });
     } else {

@@ -38,4 +38,14 @@ db.exec(`
     );
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS recent_destinations (
+      email TEXT NOT NULL,
+      destination_name TEXT NOT NULL,
+      destination_value TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY (email, destination_name)
+    );
+  `);
+
 export default db;
