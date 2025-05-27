@@ -46,12 +46,12 @@ const getUserRecentDestinations = (email: string): Record<string, string> => {
     const stmt = db.prepare('SELECT destination_name, destination_value FROM recent_destinations WHERE email = ? ORDER BY created_at DESC LIMIT 5');
     const rows = stmt.all(email) as UserRecentDestinationRow[];
 
-    const recentDestiantions: Record<string, string> = {};
+    const recentDestinations: Record<string, string> = {};
     for (const row of rows) {
-        recentDestiantions[row.destination_name] = row.destination_value;
+        recentDestinations[row.destination_name] = row.destination_value;
     }
 
-    return recentDestiantions;
+    return recentDestinations;
 }
 
 // Login Endpoint

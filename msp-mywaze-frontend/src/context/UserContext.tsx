@@ -161,7 +161,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     if (!userData) return;
     try {
-      await recentDestinationsClient.saveRecentDestiantion(
+      await recentDestinationsClient.saveRecentDestination(
         userData.email,
         destinationName,
         destinationValue

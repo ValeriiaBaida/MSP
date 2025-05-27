@@ -1,6 +1,6 @@
 const API_BASE = 'http://localhost:3000/api/recentDestinations'; // Adjust path if needed
 
-export async function saveRecentDestiantion(email: string, destinationName: string, destinationValue: any): Promise<void> {
+export async function saveRecentDestination(email: string, destinationName: string, destinationValue: any): Promise<void> {
   const response = await fetch(`${API_BASE}/set`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
