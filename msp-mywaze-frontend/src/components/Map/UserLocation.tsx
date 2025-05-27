@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { CircleMarker, useMap } from 'react-leaflet';
-import { LatLngExpression } from 'leaflet';
+import { Marker, useMap } from 'react-leaflet';
+import { LatLngExpression, divIcon } from 'leaflet';
 import './UserLocation.css';
 
 interface UserLocationProps {
@@ -18,11 +18,19 @@ const UserLocation: React.FC<UserLocationProps> = ({ currentLocation }) => {
     }
   }, [currentLocation, map]);
 
+  // Create a custom icon that looks like a circle
+  const userLocationIcon = divIcon({
+    className: 'user-location-icon',
+    html: '<div class="user-location-circle"></div>',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  });
+
   return (
-    <CircleMarker
-      center={currentLocation}
-      radius={10}
-      className="user-location"
+    <Marker
+      position={currentLocation}
+      icon={userLocationIcon}
+      zIndexOffset={1000} // This works with regular Markers
     />
   );
 };

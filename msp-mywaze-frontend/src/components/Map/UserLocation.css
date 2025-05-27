@@ -1,6 +1,13 @@
-.user-location {
-    stroke: #ffffff; /* Border color */
-    stroke-width: 3;
-    fill: #3388ff;   /* Fill color */
-    fill-opacity: 1;
-  }
+.user-location-icon {
+  background: transparent;
+  border: none;
+}
+
+.user-location-circle {
+  width: 18px;
+  height: 18px;
+  background-color: #007bff;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}

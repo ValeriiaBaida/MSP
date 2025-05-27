@@ -9,10 +9,12 @@ import BookmarkList from '../components/BookmarkList/BookmarkList';
 import SpeedDisplay from '../components/SpeedDisplay/SpeedDisplay';
 
 import { useLiveLocation } from '../hooks/useLiveLocation';
+
 import { useUser } from '../context/UserContext';
+import ReportHazardButton from '../components/HazardReporting/ReportHazardButton';
+import random from "random"; // Used only for debugging feature for speed warnings below
 
-import random from 'random'; // Debugging tool
-
+// Bookmark Format
 interface NamedCoordinates {
   lat: number;
   lon: number;
@@ -28,19 +30,26 @@ const MapView: React.FC = () => {
   const [overrideSpeed, setOverrideSpeed] = useState<number | null>(null);
   const [submittedDestination, setSubmittedDestination] = useState<Destination>('');
 
+
   const unit: 'km/h' | 'mph' =
     userData?.preferences?.unit_type === 'mph' ? 'mph' : 'km/h';
 
   const handleSearch = () => {
     if (!currentLocation) {
-      alert('Location access is required for routing.');
+      alert("Location access is required for routing.");
       return;
     }
     setSubmittedDestination(destination);
   };
-
   const handleBookmarkSelect = (destinationObj: NamedCoordinates) => {
+
+  // Set Destination by saved destination
+  const handleSelectionOfSavedDestination = (
+    destinationObj: NamedCoordinates
+  ) => {
+
     setSubmittedDestination(destinationObj);
+    setDestination(destinationObj.name);
   };
 
   const rawSpeed = overrideSpeed !== null ? overrideSpeed : speed;
@@ -55,11 +64,12 @@ const MapView: React.FC = () => {
     <div className="map-view">
       <SearchBar
         onSearch={handleSearch}
+        onRecentDestinationSelect={handleSelectionOfSavedDestination}
         setDestination={setDestination}
         destination={destination}
       />
 
-      <BookmarkList onSelect={handleBookmarkSelect} />
+      <BookmarkList onSelect={handleSelectionOfSavedDestination} />
 
       <UserMenu />
 
@@ -76,6 +86,8 @@ const MapView: React.FC = () => {
           onClick={() => setOverrideSpeed(random.normal(14, 5)())}
         />
       )}
+
+      <ReportHazardButton location={currentLocation} />
     </div>
   );
 };
