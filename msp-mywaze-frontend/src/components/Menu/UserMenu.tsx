@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './UserMenu.css';
 import LogoutItem from './LogoutItem';
 import VehicleTypeSelector from './VehicleTypeSelector';
+import UnitSelector from './UnitSelector';
 
 const UserMenu: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -26,18 +27,21 @@ const UserMenu: React.FC = () => {
 
   return (
     <div className="user-menu-container" ref={menuRef}>
-      { /* Always visible menu button */ }
+      { /* Always visible menu button */}
       <button className="user-menu-button" onClick={toggleMenu}>
         <img src="/user-settings.svg" alt="Settings" className="user-menu-icon" />
       </button>
 
-      { /* Toggleable menu contents */ }
+      { /* Toggleable menu contents */}
       {open && (
         <div className="user-menu-dropdown">
           <div className="user-menu-item nohover"><LogoutItem /></div>
           <hr></hr>
           <div className="user-menu-item nohover">
             <VehicleTypeSelector />
+          </div>
+          <div className="user-menu-item nohover">
+            <UnitSelector />
           </div>
         </div>
       )}
