@@ -1,13 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Polyline } from "react-leaflet";
-import { Marker as LeafletMarker } from "leaflet";
-import UserLocation from "./UserLocation";
-import ZoomToRoute from "./RouteZoomHandler";
-import DestinationMarker from "./DestinationMarker";
-import BookmarkModal from "./BookmarkModal";
-import { useUser } from "../../context/UserContext";
-import { geocodeDestination, getRoute } from "../../api/routingClient";
-import "./RouteMap.css";
+import React, { useEffect, useRef, useState } from 'react';
+import { MapContainer, TileLayer, Polyline } from 'react-leaflet';
+import { Marker as LeafletMarker } from 'leaflet';
+import UserLocation from './UserLocation';
+import ZoomToRoute from './RouteZoomHandler';
+import DestinationMarker from './DestinationMarker';
+import BookmarkModal from './BookmarkModal';
+import { useUser } from '../../context/UserContext';
+import { geocodeDestination, getRoute } from '../../api/routingClient';
+import './RouteMap.css';
+import { Marker, Popup } from 'react-leaflet';
+import { useHazardEventSource } from '../../hooks/useHazardEventSource';
+import { hazardMarkerIcon } from './Icons';
+import HazardMarker from './HazardMarker';
 
 interface NamedCoordinates {
   lat: number;
@@ -48,6 +52,8 @@ const RouteMap: React.FC<RouteMapProps> = ({
   const { userData, updateBookmark, updateRecentDestination } = useUser();
 
   const destinationMarkerRef = useRef<LeafletMarker | null>(null);
+
+  const hazards = useHazardEventSource();
 
   useEffect(() => {
     const resolveDestination = async () => {
@@ -175,13 +181,16 @@ const RouteMap: React.FC<RouteMapProps> = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {currentLocation && <UserLocation currentLocation={currentLocation} />}
         {route.length > 0 && (
           <>
             <Polyline positions={route} color="blue" />
             <ZoomToRoute route={route} />
           </>
         )}
+
+        {hazards.map((hazard, index) => (
+          <HazardMarker key={index} lat={hazard.lat} lon={hazard.lon} name={hazard.name} />
+        ))}
 
         {destinationCoords && destinationNameDisplay && (
           <DestinationMarker
@@ -192,6 +201,8 @@ const RouteMap: React.FC<RouteMapProps> = ({
             markerRef={destinationMarkerRef}
           />
         )}
+
+        {currentLocation && <UserLocation currentLocation={currentLocation} />}
       </MapContainer>
 
       <BookmarkModal

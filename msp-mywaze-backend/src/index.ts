@@ -5,6 +5,7 @@ import preferencesRoutes from './routes/preferences';
 import bookmarksRoutes from './routes/bookmarks';
 import recentDestinationsRoutes from './routes/recentDestinations';
 import speedlimitRoutes from './routes/speedlimit';
+import hazardRoutes from './routes/hazards';
 import cors from 'cors';
 
 const app = express();
@@ -23,6 +24,7 @@ app.use('/api/preferences', preferencesRoutes);
 app.use('/api/bookmarks', bookmarksRoutes);
 app.use('/api/recentDestinations', recentDestinationsRoutes);
 app.use('/api/speedlimit', speedlimitRoutes);
+app.use('/api/hazards', hazardRoutes);
 
 app.listen(port, () => {
   console.log(`Backend server running at http://localhost:${port}`);
