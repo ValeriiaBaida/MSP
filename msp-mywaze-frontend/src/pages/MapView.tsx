@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import './mapView.css';
+
 import SearchBar from '../components/Input/SearchBar';
 import RouteMap from '../components/Map/RouteMap';
 import UserMenu from '../components/Menu/UserMenu';
 import BookmarkList from '../components/BookmarkList/BookmarkList';
 import SpeedDisplay from '../components/SpeedDisplay/SpeedDisplay';
+
 import { useLiveLocation } from '../hooks/useLiveLocation';
+import { useUser } from '../context/UserContext';
 
-import random from 'random'; // Used only for debugging feature for speed warnings below
+import random from 'random'; // Debugging tool
 
-// Bookmark Format 
 interface NamedCoordinates {
   lat: number;
   lon: number;
@@ -21,10 +23,14 @@ type Destination = string | NamedCoordinates;
 
 const MapView: React.FC = () => {
   const { location: currentLocation, speed, speedLimit, setSpeed } = useLiveLocation();
-  const [destination, setDestination] = useState(''); // Search Input
+  const { userData } = useUser(); // Get unit preference from context
+  const [destination, setDestination] = useState('');
+  const [overrideSpeed, setOverrideSpeed] = useState<number | null>(null);
   const [submittedDestination, setSubmittedDestination] = useState<Destination>('');
 
-  // Set Destination by Search Input
+  const unit: 'km/h' | 'mph' =
+    userData?.preferences?.unit_type === 'mph' ? 'mph' : 'km/h';
+
   const handleSearch = () => {
     if (!currentLocation) {
       alert('Location access is required for routing.');
@@ -33,10 +39,17 @@ const MapView: React.FC = () => {
     setSubmittedDestination(destination);
   };
 
-  // Set Destination by Bookmark Selection 
   const handleBookmarkSelect = (destinationObj: NamedCoordinates) => {
     setSubmittedDestination(destinationObj);
   };
+
+  const rawSpeed = overrideSpeed !== null ? overrideSpeed : speed;
+
+  const convertedSpeed = rawSpeed !== null
+    ? unit === 'km/h'
+      ? rawSpeed * 3.6
+      : rawSpeed * 2.23694
+    : null;
 
   return (
     <div className="map-view">
@@ -55,11 +68,12 @@ const MapView: React.FC = () => {
         destination={submittedDestination}
       />
 
-      {speed !== null && (
+      {convertedSpeed !== null && (
         <SpeedDisplay
-          speed={speed}
+          speed={convertedSpeed}
           speedLimit={speedLimit ?? undefined}
-          onClick={() => setSpeed(random.normal(14, 5)())} // This is a prototype-only feature to test speed alerts
+          unit={unit}
+          onClick={() => setOverrideSpeed(random.normal(14, 5)())}
         />
       )}
     </div>

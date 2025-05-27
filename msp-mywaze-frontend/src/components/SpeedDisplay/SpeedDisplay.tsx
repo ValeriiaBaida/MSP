@@ -2,16 +2,20 @@ import React, { useEffect, useRef } from 'react';
 import './SpeedDisplay.css';
 
 interface SpeedDisplayProps {
-  speed: number;
-  speedLimit?: number;
+  speed: number; // Already converted to correct unit (e.g., km/h or mph)
+  speedLimit?: number; // In m/s, will be converted internally
+  unit: 'km/h' | 'mph';
   onClick?: () => void;
 }
 
-const SpeedDisplay: React.FC<SpeedDisplayProps> = ({ speed, speedLimit, onClick }) => {
-  const kmh = Math.ceil(speed * 3.6);
-  const limit = speedLimit ? Math.ceil(speedLimit) : null;
-  const isOverLimit = limit !== null && kmh > limit;
+const SpeedDisplay: React.FC<SpeedDisplayProps> = ({ speed, speedLimit, unit, onClick }) => {
+  const displaySpeed = Math.ceil(speed);
 
+  const limit = speedLimit
+    ? Math.ceil(unit === 'km/h' ? speedLimit * 3.6 : speedLimit * 2.23694)
+    : null;
+
+  const isOverLimit = limit !== null && displaySpeed > limit;
   const wasOverLimitRef = useRef(false);
 
   useEffect(() => {
@@ -29,15 +33,15 @@ const SpeedDisplay: React.FC<SpeedDisplayProps> = ({ speed, speedLimit, onClick 
       {limit !== null && (
         <div className="speed-limit-circle">
           <div className="limit-value">{limit}</div>
-          <div className="limit-unit">km/h</div>
+          <div className="limit-unit">{unit}</div>
         </div>
       )}
       <div
         className={`speed-display${isOverLimit ? ' over-limit' : ''}`}
         onClick={onClick}
       >
-        <div className="speed-value">{kmh}</div>
-        <div className="speed-unit">km/h</div>
+        <div className="speed-value">{displaySpeed}</div>
+        <div className="speed-unit">{unit}</div>
       </div>
     </div>
   );
