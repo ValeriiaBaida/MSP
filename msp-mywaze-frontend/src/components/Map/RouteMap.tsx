@@ -11,6 +11,7 @@ import './RouteMap.css';
 import { Marker, Popup } from 'react-leaflet';
 import { useHazardEventSource } from '../../hooks/useHazardEventSource';
 import { hazardMarkerIcon } from './Icons';
+import HazardMarker from './HazardMarker';
 
 interface NamedCoordinates {
   lat: number;
@@ -145,13 +146,16 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {currentLocation && <UserLocation currentLocation={currentLocation} />}
         {route.length > 0 && (
           <>
             <Polyline positions={route} color="blue" />
             <ZoomToRoute route={route} />
           </>
         )}
+
+        {hazards.map((hazard, index) => (
+          <HazardMarker key={index} lat={hazard.lat} lon={hazard.lon} name={hazard.name} />
+        ))}
 
         {destinationCoords && destinationNameDisplay && (
           <DestinationMarker
@@ -163,15 +167,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ currentLocation, destination }) => 
           />
         )}
 
-        {hazards.map((hazard, index) => (
-          <Marker
-            key={`hazard-${index}`}
-            position={[hazard.lat, hazard.lon]}
-            icon={hazardMarkerIcon}
-          >
-            <Popup>{hazard.name}</Popup>
-          </Marker>
-        ))}
+        {currentLocation && <UserLocation currentLocation={currentLocation} />}
       </MapContainer>
 
       <BookmarkModal
