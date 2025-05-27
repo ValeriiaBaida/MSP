@@ -3,6 +3,7 @@ import routingRoutes from './routes/routing';
 import authRoutes from './routes/auth';
 import preferencesRoutes from './routes/preferences';
 import bookmarksRoutes from './routes/bookmarks';
+import recentDestinationsRoutes from './routes/recentDestinations';
 import speedlimitRoutes from './routes/speedlimit';
 import hazardRoutes from './routes/hazards';
 import cors from 'cors';
@@ -21,6 +22,7 @@ app.use('/api/routing', routingRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/preferences', preferencesRoutes);
 app.use('/api/bookmarks', bookmarksRoutes);
+app.use('/api/recentDestinations', recentDestinationsRoutes);
 app.use('/api/speedlimit', speedlimitRoutes);
 app.use('/api/hazards', hazardRoutes);
 

@@ -9,9 +9,9 @@ import SpeedDisplay from '../components/SpeedDisplay/SpeedDisplay';
 import { useLiveLocation } from '../hooks/useLiveLocation';
 import ReportHazardButton from '../components/HazardReporting/ReportHazardButton';
 
-import random from 'random'; // Used only for debugging feature for speed warnings below
+import random from "random"; // Used only for debugging feature for speed warnings below
 
-// Bookmark Format 
+// Bookmark Format
 interface NamedCoordinates {
   lat: number;
   lon: number;
@@ -21,33 +21,43 @@ interface NamedCoordinates {
 type Destination = string | NamedCoordinates;
 
 const MapView: React.FC = () => {
-  const { location: currentLocation, speed, speedLimit, setSpeed } = useLiveLocation();
-  const [destination, setDestination] = useState(''); // Search Input
-  const [submittedDestination, setSubmittedDestination] = useState<Destination>('');
+  const {
+    location: currentLocation,
+    speed,
+    speedLimit,
+    setSpeed,
+  } = useLiveLocation();
+  const [destination, setDestination] = useState(""); // Search Input
+  const [submittedDestination, setSubmittedDestination] =
+    useState<Destination>("");
 
   // Set Destination by Search Input
   const handleSearch = () => {
     if (!currentLocation) {
-      alert('Location access is required for routing.');
+      alert("Location access is required for routing.");
       return;
     }
     setSubmittedDestination(destination);
   };
 
-  // Set Destination by Bookmark Selection 
-  const handleBookmarkSelect = (destinationObj: NamedCoordinates) => {
+  // Set Destination by saved destination
+  const handleSelectionOfSavedDestination = (
+    destinationObj: NamedCoordinates
+  ) => {
     setSubmittedDestination(destinationObj);
+    setDestination(destinationObj.name);
   };
 
   return (
     <div className="map-view">
       <SearchBar
         onSearch={handleSearch}
+        onRecentDestinationSelect={handleSelectionOfSavedDestination}
         setDestination={setDestination}
         destination={destination}
       />
 
-      <BookmarkList onSelect={handleBookmarkSelect} />
+      <BookmarkList onSelect={handleSelectionOfSavedDestination} />
 
       <UserMenu />
 
