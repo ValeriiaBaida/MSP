@@ -12,7 +12,7 @@ const SpeedDisplay: React.FC<SpeedDisplayProps> = ({ speed, speedLimit, unit, on
   const displaySpeed = Math.ceil(speed);
 
   const limit = speedLimit
-    ? Math.ceil(unit === 'km/h' ? speedLimit * 3.6 : speedLimit * 2.23694)
+    ? Math.ceil(unit === 'km/h' ? speedLimit : speedLimit * 0.62)
     : null;
 
   const isOverLimit = limit !== null && displaySpeed > limit;
