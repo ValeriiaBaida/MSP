@@ -41,7 +41,6 @@ const MapView: React.FC = () => {
     }
     setSubmittedDestination(destination);
   };
-  const handleBookmarkSelect = (destinationObj: NamedCoordinates) => {
 
   // Set Destination by saved destination
   const handleSelectionOfSavedDestination = (
@@ -51,6 +50,8 @@ const MapView: React.FC = () => {
     setSubmittedDestination(destinationObj);
     setDestination(destinationObj.name);
   };
+
+
 
   const rawSpeed = overrideSpeed !== null ? overrideSpeed : speed;
 
@@ -91,5 +92,6 @@ const MapView: React.FC = () => {
     </div>
   );
 };
+
 
 export default MapView;
