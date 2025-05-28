@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSpeedLimit } from '../api/speedlimitClient';
 
-// this hook provides the current location and speed of the user and fetches the speed limit from the backend
 export function useLiveLocation() {
   const [location, setLocation] = useState<[number, number] | null>(null);
   const [speed, setSpeed] = useState<number | null>(null);
   const [speedLimit, setSpeedLimit] = useState<number | null>(null);
+
+  const lastUpdateTimeRef = useRef<number>(0);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -15,9 +16,15 @@ export function useLiveLocation() {
 
     const watchId = navigator.geolocation.watchPosition(
       async (pos) => {
+        const now = Date.now();
+        if (now - lastUpdateTimeRef.current < 5000) {
+          return; // Skip update if less than 5s since last
+        }
+        lastUpdateTimeRef.current = now;
+
         const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
         setLocation(coords);
-        setSpeed(pos.coords.speed !== null ? pos.coords.speed : 13); // Default speed 13 is only for the prototype
+        setSpeed(pos.coords.speed !== null ? pos.coords.speed : 13);
 
         try {
           const data = await getSpeedLimit(coords[0], coords[1]);
@@ -44,5 +51,5 @@ export function useLiveLocation() {
     };
   }, []);
 
-  return { location, speed, speedLimit, setSpeed }; // setSpeed is only exposed to allow for the random speed in the prototype (see MapView)
+  return { location, speed, speedLimit, setSpeed };
 }
