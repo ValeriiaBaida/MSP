@@ -5,6 +5,7 @@ import * as authClient from "../api/authClient";
 import * as preferencesClient from "../api/preferencesClient";
 import * as bookmarksClient from "../api/bookmarksClient";
 import * as recentDestinationsClient from "../api/recentDestinationsClient";
+import type { UserStatistics } from "../api/statisticsClient";
 
 interface User {
   email: string;
@@ -15,6 +16,7 @@ interface User {
     string,
     { lat: number; lon: number; name: string }
   >;
+  statistics?: UserStatistics;
 }
 
 interface UserContextType {
@@ -32,6 +34,8 @@ interface UserContextType {
     destinationName: string,
     destinationValue: { lat: number; lon: number; name: string }
   ) => void;
+  updateStatistics: (newStats: Partial<UserStatistics>) => void;
+
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -68,6 +72,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
         preferences: user.preferences || {},
         bookmarks: parsedBookmarks,
         recentDestinations: parsedRecentDestinations,
+        statistics: user.statistics,
       });
       setIsLoggedIn(true);
     } catch (error) {
@@ -102,7 +107,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
         preferences: user.preferences || {},
         bookmarks: parsedBookmarks,
         recentDestinations: parsedRecentDestinations,
+        statistics: user.statistics,
       });
+      const today = new Date().toISOString().split('T')[0];
+      localStorage.setItem(`last_active_day_${email}`, today);
       setIsLoggedIn(true);
     } catch (error) {
       console.error("Registration failed:", error);
@@ -188,6 +196,24 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const updateStatistics = (newStats: Partial<UserStatistics>) => {
+    setUserData((prev): User => {
+      if (!prev) throw new Error("Unexpected null user");
+
+      const mergedStatistics: UserStatistics = {
+        avg_speed: newStats.avg_speed ?? prev.statistics?.avg_speed ?? 0,
+        active_days: newStats.active_days ?? prev.statistics?.active_days ?? 1,
+        last_active_date: newStats.last_active_date ?? prev.statistics?.last_active_date ?? '',
+      };
+
+      return {
+        ...prev,
+        statistics: mergedStatistics,
+      };
+    });
+  };
+
+
   const logout = () => {
     setIsLoggedIn(false);
     setUserData(null);
@@ -204,6 +230,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
         updatePreference,
         updateBookmark,
         updateRecentDestination,
+        updateStatistics,
       }}
     >
       {children}
