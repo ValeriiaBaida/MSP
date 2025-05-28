@@ -9,7 +9,8 @@ import BookmarkList from '../components/BookmarkList/BookmarkList';
 import SpeedDisplay from '../components/SpeedDisplay/SpeedDisplay';
 
 import { useLiveLocation } from '../hooks/useLiveLocation';
-
+import { useAverageSpeed } from '../hooks/useAverageSpeed';
+import { useMarkActiveDay } from '../hooks/useMarkActiveDay';
 import { useUser } from '../context/UserContext';
 import ReportHazardButton from '../components/HazardReporting/ReportHazardButton';
 import random from "random"; // Used only for debugging feature for speed warnings below
@@ -26,6 +27,7 @@ type Destination = string | NamedCoordinates;
 const MapView: React.FC = () => {
   const { location: currentLocation, speed, speedLimit, setSpeed } = useLiveLocation();
   const { userData } = useUser(); // Get unit preference from context
+  const email = userData?.email ?? null;
   const [destination, setDestination] = useState('');
   const [overrideSpeed, setOverrideSpeed] = useState<number | null>(null);
   const [submittedDestination, setSubmittedDestination] = useState<Destination>('');
@@ -51,8 +53,6 @@ const MapView: React.FC = () => {
     setDestination(destinationObj.name);
   };
 
-
-
   const rawSpeed = overrideSpeed !== null ? overrideSpeed : speed;
 
   const convertedSpeed = rawSpeed !== null
@@ -60,8 +60,9 @@ const MapView: React.FC = () => {
       ? rawSpeed * 3.6
       : rawSpeed * 2.23694
     : null;
-
-  return (
+    useAverageSpeed(rawSpeed);
+    useMarkActiveDay(email);
+    return (
     <div className="map-view">
       <SearchBar
         onSearch={handleSearch}

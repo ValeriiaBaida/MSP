@@ -48,4 +48,13 @@ db.exec(`
     );
   `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS user_statistics (
+    email TEXT PRIMARY KEY,
+    avg_speed REAL DEFAULT 47,
+    active_days INTEGER DEFAULT 1,
+    last_active_date TEXT NOT NULL DEFAULT (date('now'))
+  );
+`);
+
 export default db;

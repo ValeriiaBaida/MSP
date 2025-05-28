@@ -3,6 +3,7 @@ import './UserMenu.css';
 import LogoutItem from './LogoutItem';
 import VehicleTypeSelector from './VehicleTypeSelector';
 import UnitSelector from './UnitSelector';
+import Statistics from "../Statistics/Statistics.tsx";
 
 const UserMenu: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -42,6 +43,8 @@ const UserMenu: React.FC = () => {
           </div>
           <div className="user-menu-item nohover">
             <UnitSelector />
+            <Statistics />
+
           </div>
         </div>
       )}

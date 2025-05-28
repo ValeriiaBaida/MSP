@@ -3,6 +3,7 @@ import db from '../database/db';
 
 const router = Router();
 
+// Interfaces for database rows
 interface UserPreferenceRow {
     setting: string;
     value: string;
@@ -17,6 +18,13 @@ interface UserRecentDestinationRow {
     destination_name: string;
     destination_value: string;
 }
+
+interface UserStatistics {
+    avg_speed: number;
+    active_days: number;
+    last_active_date: string;
+}
+
 
 const getUserPreferences = (email: string): Record<string, string> => {
     const stmt = db.prepare('SELECT setting, value FROM user_preferences WHERE email = ?');
@@ -54,6 +62,26 @@ const getUserRecentDestinations = (email: string): Record<string, string> => {
     return recentDestinations;
 }
 
+const getUserStatistics = (email: string): UserStatistics => {
+    const stmt = db.prepare(` SELECT avg_speed, active_days, last_active_date  FROM user_statistics WHERE email = ?`);
+    const stats = stmt.get(email) as UserStatistics | undefined;
+
+    if (!stats) {
+        const today = new Date().toISOString().split("T")[0];
+
+        db.prepare(`INSERT INTO user_statistics (email, avg_speed, active_days, last_active_date)VALUES (?, 47, 1, ?`).run(email, today);
+
+        return {
+            avg_speed: 47,
+            active_days: 1,
+            last_active_date: today,
+        };
+    }
+
+    return stats;
+};
+
+
 // Login Endpoint
 router.post('/login', async (req: Request, res: Response): Promise<any> => {
   const { email, password } = req.body;
@@ -70,15 +98,17 @@ router.post('/login', async (req: Request, res: Response): Promise<any> => {
       const preferences = getUserPreferences(email);
       const bookmarks = getUserBookmarks(email);
       const recentDestinations = getUserRecentDestinations(email);
+      const statistics = getUserStatistics(email);
 
-      return res.status(200).json({
-        user: {
-          email,
-          preferences,
-          bookmarks,
-          recentDestinations,
-        },
-      });
+        return res.status(200).json({
+            user: {
+                email,
+                preferences,
+                bookmarks,
+                recentDestinations,
+                statistics,
+            },
+        });
     } else {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -104,13 +134,18 @@ router.post('/register', async (req: Request, res: Response): Promise<any> => {
     const stmt2 = db.prepare('INSERT INTO user_preferences (email, setting, value) VALUES (?, \'vehicle_type\', \'car\')');
     stmt2.run(email);
 
-    const preferences = getUserPreferences(email);
+    // Initialize user statistics
+    const today = new Date().toISOString().split("T")[0];
+    db.prepare(`INSERT INTO user_statistics (email, avg_speed, active_days, last_active_date) VALUES (?, 47, 1, ?)`).run(email, today);
 
+    const preferences = getUserPreferences(email);
+    const statistics = getUserStatistics(email);
     return res.status(201).json({
-      user: {
-        email,
-        preferences,
-      },
+        user: {
+            email,
+            preferences,
+            statistics,
+        },
     });
   } catch (error: any) {
     if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
